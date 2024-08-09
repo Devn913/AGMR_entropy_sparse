@@ -33,8 +33,8 @@ for iiii = 1:length(datasets)
     X = svdatanorm(X, 'ker');
     
     percentage = [0.3];
-    num_fold = 5; num_metric = 5; num_method = 1;
-    accuracy = zeros(1, 10);
+    num_fold = 5; num_metric = 16; num_method = 1;
+    % accuracy = zeros(1, 10);
     
     indices = crossvalind('Kfold', size(X, 1), num_fold);
     Results = zeros(num_metric + 2, num_fold, num_method);
@@ -80,12 +80,12 @@ for iiii = 1:length(datasets)
             params.epsilon = 0.01;
             params.Xtest = test_data;
             tic;
-            [Pre_Labels,~] = multi_class_AGMR_entropy(params);
+            [Pre_Labels,~] = multi_class_AGMR_sparse(params);
             time5 = toc;
             Results_AGMR(1, i, ii) = time5;
             Pre_Labels(Pre_Labels(:, :) == ~1) = -1;
-            [ExactM, HamS, MacroF1, MicroF1, AvePre] = Evaluation(Pre_Labels', target_test');
-            Results_AGMR(2:end, i, ii) = [ExactM, HamS, MacroF1, MicroF1, AvePre];
+            tmpResult = EvaluationAll(Pre_Labels', Pre_Labels',target_test');
+            Results_AGMR(2:end, i, ii) = tmpResult';
             % accuracy(i) = sum(Pre_Labels == target_test) / length(target_test);
 
             %% ===================================================
@@ -115,7 +115,13 @@ for iiii = 1:length(datasets)
     % disp(meanAccuracy*100);
     % std_dev = std(accuracy);
     % disp(std_dev*100);
-    disp(meanResults_AGMR);
+    disp("AGMR");
+    % create a vector of metric 
+    metric = ["time", "HammingLoss", "ExampleBasedAccuracy", "ExampleBasedPrecision", "ExampleBasedRecall", "ExampleBasedFmeasure", "SubsetAccuracy", "LabelBasedAccuracy", "LabelBasedPrecision", "LabelBasedRecall", "LabelBasedFmeasure", "MicroF1Measure", "Average_Precision", "OneError", "RankingLoss", "Coverage"];
+    for i = 1:length(metric)
+        % print in a formatted way
+        disp(sprintf('%-20s: %-10.4f %-10.4f', metric(i), meanResults_AGMR(i), stdResults_AGMR(i)));
+    end
 
     %
     %     disp("LGMPM");

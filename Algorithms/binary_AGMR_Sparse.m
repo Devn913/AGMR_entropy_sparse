@@ -17,8 +17,8 @@ function [labels,time] = binary_AGMR_Sparse(params)
     number_of_features                = size(params.X,2);
     number_of_classes                 = length(unique(params.Ylabel));
     n                                 = number_of_labelled_examples + number_of_unlabelled_examples;
-    K_l                               = evalkernel(params.Xlabel,params.X,params.kernel,params.kernelparam); 
-    params.K                          = evalkernel(params.X,params.X,params.kernel,params.kernelparam);
+    K_l                               = eval_kernel(params.Xlabel,params.X,params.kernel,params.kernelparam); 
+    params.K                          = eval_kernel(params.X,params.X,params.kernel,params.kernelparam);
     W                                 = eye(number_of_labelled_examples+number_of_unlabelled_examples);
     L                                 = cal_laplacian(W);
     %inverse of matrix
@@ -34,10 +34,10 @@ function [labels,time] = binary_AGMR_Sparse(params)
         % Calculate numerator
         numerator = (params.eta1 * (params.X     * params.X') + 0.5 * (F_x*F_x')); % W(:, 2) selects the second column of W
         den1 = params.eta1*params.X*params.X'*W;
-        FFT  = 0.4*(F_x*F_x');
+        FFT  = (F_x*F_x');
         for row = 1:n
             for col = 1:n
-                W(row, col) = W(row, col)*(numerator(row, col))*(inv(den1(col, col) + FFT(row, row))+ params.eta2/2);
+                W(row, col) = W(row, col)*(numerator(row, col))*(inv(den1(col, col) + 0.25*(FFT(row, row)+FFT(col,col))+ params.eta2/2));
             end
         end
         L          = cal_laplacian(W);
@@ -50,7 +50,7 @@ function [labels,time] = binary_AGMR_Sparse(params)
         end
     end
     time = toc;
-    labels = sign(evalkernel(params.Xtest,params.X,params.kernel,params.kernelparam)*alpha);
+    labels = sign(eval_kernel(params.Xtest,params.X,params.kernel,params.kernelparam)*alpha);
 end
 function val = optimization_function(W, F,Y,params,L,F_l)
     % sum(w[i][j] * (f(x[i]) - f(x[j]))^2) + gamma1 * sum(i=1:labelled_example ||f(x_i) - y_i||^2) + gamma2 * f(x)^T * L * f(x)

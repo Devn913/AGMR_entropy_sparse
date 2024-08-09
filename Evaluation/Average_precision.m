@@ -1,11 +1,7 @@
-function Average_Precision = Average_precision(Outputs,test_target)
+function Average_Precision=Average_precision(Outputs,test_target)
 %Computing the average precision
 %Outputs: the predicted outputs of the classifier, the output of the ith instance for the jth class is stored in Outputs(j,i)
 %test_target: the actual labels of the test instances, if the ith instance belong to the jth class, test_target(j,i)=1, otherwise test_target(j,i)=-1
-test_target(test_target(:,:)==0)=-1;
-Outputs(Outputs(:,:)==0)=-1;
-
-
 
     [num_class,num_instance]=size(Outputs);
     temp_Outputs=[];
@@ -50,7 +46,13 @@ Outputs(Outputs(:,:)==0)=-1;
             [tempvalue,loc]=ismember(Label{i,1}(m),index);
             summary=summary+sum(indicator(loc:num_class))/(num_class-loc+1);
         end
-        ap_binary(i)=summary/Label_size(i);
-        aveprec=aveprec+summary/Label_size(i);
+        
+        a=Label_size(i);
+        if isempty(m)
+            a=1;
+        end
+        ap_binary(i)=summary/a;
+        aveprec=aveprec+summary/a;
+        
     end
     Average_Precision=aveprec/num_instance;

@@ -9,8 +9,7 @@ function [LabelBasedAccuracy,LabelBasedPrecision,LabelBasedRecall,LabelBasedFmea
 %
 % output
 %   LabelBasedAccuracy,LabelBasedPrecision,LabelBasedRecall,LabelBasedFmeasure
-   %test_targets(test_targets(:,:)==0)=-1;
-   %predict_targets(predict_targets(:,:)==0)=-1;
+
 
     [L,~]=size(test_targets);
     test_targets=double(test_targets==1);
@@ -42,12 +41,11 @@ function [LabelBasedAccuracy,LabelBasedPrecision,LabelBasedRecall,LabelBasedFmea
         LabelBasedPrecision=LabelBasedPrecision + precision_i;
         LabelBasedRecall=LabelBasedRecall + recall_i;
         if recall_i~=0 || precision_i~=0
-            LabelBasedFmeasure=LabelBasedFmeasure + 2*recall_i*precision_i/(recall_i+precision_i);
+            LabelBasedFmeasure = LabelBasedFmeasure + 2*recall_i*precision_i/(recall_i+precision_i);
         end
     end
-    
     LabelBasedAccuracy=LabelBasedAccuracy/L;
     LabelBasedPrecision=LabelBasedPrecision/L;
     LabelBasedRecall=LabelBasedRecall/L;
-    LabelBasedFmeasure=LabelBasedFmeasure/L;
+    LabelBasedFmeasure = LabelBasedFmeasure/L;
 end

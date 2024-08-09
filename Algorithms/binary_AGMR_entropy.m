@@ -16,8 +16,8 @@ function [labels,time] = binary_AGMR_entropy(params)
     number_of_features                = size(params.X,2);
     number_of_classes                 = length(unique(params.Ylabel));
     n                                 = number_of_labelled_examples + number_of_unlabelled_examples;
-    K_l                               = evalkernel(params.Xlabel,params.X,params.kernel,params.kernelparam); 
-    params.K                          = evalkernel(params.X,params.X,params.kernel,params.kernelparam);
+    K_l                               = eval_kernel(params.Xlabel,params.X,params.kernel,params.kernelparam); 
+    params.K                          = eval_kernel(params.X,params.X,params.kernel,params.kernelparam);
     W                                 = eye(number_of_labelled_examples+number_of_unlabelled_examples);
     L                                 = cal_laplacian(W);
     %inverse of matrix
@@ -47,7 +47,7 @@ function [labels,time] = binary_AGMR_entropy(params)
         end
     end
     time = toc;
-    labels = sign(evalkernel(params.Xtest,params.X,params.kernel,params.kernelparam)*alpha);
+    labels = sign(eval_kernel(params.Xtest,params.X,params.kernel,params.kernelparam)*alpha);
 end
 function val = optimization_function(W, F,Y,params,L,F_l)
     % sum(w[i][j] * (f(x[i]) - f(x[j]))^2) + gamma1 * sum(i=1:labelled_example ||f(x_i) - y_i||^2) + gamma2 * f(x)^T * L * f(x)

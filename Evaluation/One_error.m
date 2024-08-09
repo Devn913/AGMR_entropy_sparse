@@ -1,8 +1,8 @@
-function RankingLoss=Ranking_score(Outputs,test_target)
-%Computing the hamming loss
+function OneError=One_error(Outputs,test_target)
+%Computing the one error
 %Outputs: the predicted outputs of the classifier, the output of the ith instance for the jth class is stored in Outputs(j,i)
 %test_target: the actual labels of the test instances, if the ith instance belong to the jth class, test_target(j,i)=1, otherwise test_target(j,i)=-1
-
+  
     [num_class,num_instance]=size(Outputs);
     temp_Outputs=[];
     temp_test_target=[];
@@ -32,17 +32,21 @@ function RankingLoss=Ranking_score(Outputs,test_target)
         end
     end
     
-    rankloss=0;
+    oneerr=0;
     for i=1:num_instance
-        temp=0;
-        for m=1:Label_size(i)
-            for n=1:(num_class-Label_size(i))
-                if(Outputs(Label{i,1}(m),i)<=Outputs(not_Label{i,1}(n),i))
-                    temp=temp+1;
+        indicator=0;
+        temp=Outputs(:,i);
+        [maximum,index]=max(temp);
+        for j=1:num_class
+            if(temp(j)==maximum)                
+                if(ismember(j,Label{i,1}))
+                    indicator=1;
+                    break;
                 end
             end
         end
-        rl_binary(i)=temp/(m*n);
-        rankloss=rankloss+temp/(m*n);
+        if(indicator==0)
+            oneerr=oneerr+1;
+        end
     end
-    RankingLoss=1-rankloss/num_instance;
+    OneError=oneerr/num_instance;

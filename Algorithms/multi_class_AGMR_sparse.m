@@ -7,7 +7,7 @@ function [PreLabel,time] = multi_class_AGMR_sparse(params)
 
     full_time = 0;
 
-    % Create a one-vs-rest classifier for each class
+   
     for i = 1:numClasses
 
         % Create a binary target vector for the current class
